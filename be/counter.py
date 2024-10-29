@@ -40,3 +40,4 @@ def get_count():
         return {"count": current_count, "updated_at": last_updated}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error fetching count: {str(e)}")
+
