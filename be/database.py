@@ -1,9 +1,3 @@
-# conda create -n hw1 python=3.14
-# conda activate hw1
-# pip install "fastapi[standard]"
-# pip install python-dotenv
-# pip install psycopg2
-
 import psycopg2
 from config import DATABASE_URL
 
@@ -13,20 +7,26 @@ class DatabaseConnection:
         self.cursor = None
 
     def __enter__(self):
-        self.connection = psycopg2.connect(DATABASE_URL) 
+        self.connection = psycopg2.connect(DATABASE_URL)
         self.cursor = self.connection.cursor()
         return self
 
-    def __exit__(self, exc_type, exc_val, exc_tb):
+    def __exit__(self, exc_type, exc_value, traceback):
         if self.cursor:
             self.cursor.close()
         if self.connection:
+            if exc_type is None:
+                self.connection.commit()
+            else:
+                self.connection.rollback()
             self.connection.close()
 
     def execute(self, query, args={}):
         self.cursor.execute(query, args)
-        rows = self.cursor.fetchall()
-        return rows
-
+        if query.strip().upper().startswith("SELECT") or "RETURNING" in query.upper():
+            rows = self.cursor.fetchall()
+            return rows
+        return []
+        
     def commit(self):
         self.connection.commit()

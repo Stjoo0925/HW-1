@@ -1,10 +1,12 @@
 from fastapi.middleware.cors import CORSMiddleware
-from config import ALLOWED_ORIGINS
+import os
+
+allowed_origins = os.getenv("ALLOWED_ORIGINS", "").split(",")
 
 def setup_cors(app):
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=ALLOWED_ORIGINS,
+        allow_origins=allowed_origins,
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],

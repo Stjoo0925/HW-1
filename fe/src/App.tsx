@@ -1,22 +1,22 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 
 function App() {
   const [count, setCount] = useState<number>(0);
   const apiUrl = process.env.REACT_APP_API_URL;
 
-  useEffect(() => {
-    fetchCount();
-  }, []);
-
-  const fetchCount = async () => {
+  const fetchCount = useCallback(async () => {
     try {
       const response = await axios.get(`${apiUrl}/counter`);
       setCount(response.data.count);
     } catch (error) {
       console.error("숫자 가져오기 실패", error);
     }
-  };
+  }, [apiUrl]);
+
+  useEffect(() => {
+    fetchCount();
+  }, [fetchCount]);
 
   const incrementCount = async () => {
     try {
